@@ -20,25 +20,23 @@ $prestiti = prestiti_attivi_tutti($pdo);
 <body data-role="bibliotecario">
 
   <!-- ===== NAVBAR ===== -->
-  <nav class="navbar">
-    <div class="navbar__brand">
-      <span class="navbar__icon">📚</span>
-      <span class="navbar__title">BiblioScuola</span>
-    </div>
+<nav class="navbar">
+  <a class="navbar__brand" href="/gestione_restituzioni.php">
+    <span class="navbar__icon">📚</span>
+    <span class="navbar__title">BiblioTech</span>
+  </a>
 
-    <ul class="navbar__links">
-      <li><a href="dashboard.php">Dashboard</a></li>
-      <li><a href="gestione_restituzioni.php" class="active">Restituzioni</a></li>
-      <li><a href="gestione_libri.php">Libri</a></li>
-      <li><a href="gestione_studenti.php">Studenti</a></li>
-    </ul>
+  <ul class="navbar__links">
+    <li><a class="active" href="/gestione_restituzioni.php">Restituzioni</a></li>
+    <li><a href="/libri.php">Libri</a></li>
+  </ul>
 
-    <div class="navbar__user">
-      <span class="navbar__badge navbar__badge--admin">Bibliotecario</span>
-      <span class="navbar__username"><?= htmlspecialchars($_SESSION['username']) ?></span>
-      <a href="logout.php" class="btn btn--ghost btn--sm">Esci</a>
-    </div>
-  </nav>
+  <div class="navbar__user">
+    <span class="navbar__badge navbar__badge--admin">Bibliotecario</span>
+    <span class="navbar__username"><?= htmlspecialchars($_SESSION['username']) ?></span>
+    <a href="/logout.php" class="btn btn--ghost btn--sm">Esci</a>
+  </div>
+</nav>
 
   <!-- ===== CONTENUTO PRINCIPALE ===== -->
   <main class="container">

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 require __DIR__ . "/config.php";
 require __DIR__ . "/funzioni.php";
 
@@ -13,42 +15,44 @@ if (!$libro) {
     echo "Libro non trovato.";
     exit;
 }
+
+$disp = (int)$libro['copie_disponibili'];
 ?>
 <!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= htmlspecialchars($libro['titolo']) ?> — Biblioteca</title>
+  <title><?= htmlspecialchars($libro['titolo']) ?> — BiblioTech</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body data-role="studente">
 
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar">
-    <div class="navbar__brand">
+    <a class="navbar__brand" href="/libri.php">
       <span class="navbar__icon">📚</span>
-      <span class="navbar__title">BiblioScuola</span>
-    </div>
+      <span class="navbar__title">BiblioTech</span>
+    </a>
 
     <ul class="navbar__links">
-      <li><a href="catalogo.php">Catalogo</a></li>
-      <li><a href="prestiti.php">I miei prestiti</a></li>
+      <li><a href="/libri.php">Catalogo</a></li>
+      <li><a href="/prestiti.php">I miei prestiti</a></li>
     </ul>
 
     <div class="navbar__user">
       <span class="navbar__badge navbar__badge--student">Studente</span>
       <span class="navbar__username"><?= htmlspecialchars($_SESSION['username']) ?></span>
-      <a href="logout.php" class="btn btn--ghost btn--sm">Esci</a>
+      <a href="/logout.php" class="btn btn--ghost btn--sm">Esci</a>
     </div>
   </nav>
 
   <!-- ===== CONTENUTO PRINCIPALE ===== -->
-  <main class="container">
+  <main>
 
     <!-- Breadcrumb -->
     <nav class="breadcrumb" aria-label="Navigazione">
-      <a href="catalogo.php">← Torna al catalogo</a>
+      <a href="/libri.php">← Torna al catalogo</a>
     </nav>
 
     <!-- Scheda libro -->
@@ -61,7 +65,6 @@ if (!$libro) {
           <h1><?= htmlspecialchars($libro['titolo']) ?></h1>
           <p class="book-detail__author"><?= htmlspecialchars($libro['autore']) ?></p>
 
-          <?php $disp = (int)$libro['copie_disponibili']; ?>
           <?php if ($disp > 0): ?>
             <span class="badge badge--ok">✓ Disponibile</span>
           <?php else: ?>
@@ -78,18 +81,22 @@ if (!$libro) {
           <dt>Autore</dt>
           <dd><?= htmlspecialchars($libro['autore']) ?></dd>
         </div>
+
         <div class="book-detail__info-row">
           <dt>ISBN</dt>
           <dd><?= htmlspecialchars($libro['isbn'] ?? '—') ?></dd>
         </div>
+
         <div class="book-detail__info-row">
           <dt>Anno</dt>
           <dd><?= htmlspecialchars((string)($libro['anno'] ?? '—')) ?></dd>
         </div>
+
         <div class="book-detail__info-row">
           <dt>Copie totali</dt>
           <dd><?= (int)$libro['copie_totali'] ?></dd>
         </div>
+
         <div class="book-detail__info-row">
           <dt>Copie disponibili</dt>
           <dd>
@@ -105,11 +112,9 @@ if (!$libro) {
       <!-- Azione prestito -->
       <footer class="book-detail__actions">
         <?php if ($disp > 0): ?>
-          <form method="post" action="azione_prestito.php">
+          <form method="post" action="/azione_prestito.php">
             <input type="hidden" name="id_libro" value="<?= (int)$libro['id_libro'] ?>">
-            <button type="submit" class="btn btn--primary">
-              ＋ Prendi in prestito
-            </button>
+            <button type="submit" class="btn btn--primary">＋ Prendi in prestito</button>
           </form>
         <?php else: ?>
           <button class="btn" disabled>Non disponibile</button>

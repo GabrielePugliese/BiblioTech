@@ -55,6 +55,6 @@ INSERT INTO utente (username, email, password_hash, ruolo) VALUES
 INSERT INTO libro (titolo, autore, isbn, anno, copie_totali, copie_disponibili) VALUES
 ('1984', 'George Orwell', '9780451524935', 1949, 5, 5),
 ('Il Signore degli Anelli', 'J.R.R. Tolkien', '9788845292613', 1954, 4, 4),
-('Il Piccolo Principe', 'Antoine de Saint-Exupéry', '9780156012195', 1943, 3, 3),
+('Il Piccolo Principe', 'Antoine de Saint-Exupery', '9780156012195', 1943, 3, 3),
 ('Harry Potter e la Pietra Filosofale', 'J.K. Rowling', '9780747532699', 1997, 6, 6),
 ('Fahrenheit 451', 'Ray Bradbury', '9781451673319', 1953, 2, 2);

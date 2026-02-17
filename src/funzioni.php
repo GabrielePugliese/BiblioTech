@@ -17,13 +17,16 @@ function richiedi_login(): void {
     }
 }
 
-function richiedi_ruolo(string $ruolo): void {
-    if (($_SESSION['ruolo'] ?? '') !== $ruolo) {
+function richiedi_ruolo(string ...$ruoli): void {
+    $ruoloUtente = $_SESSION['ruolo'] ?? '';
+
+    if (!in_array($ruoloUtente, $ruoli, true)) {
         http_response_code(403);
         echo "Accesso negato.";
         exit;
     }
 }
+
 
 /* ===================== INVIO EMAIL (SMTP diretto a Mailpit) ===================== */
 

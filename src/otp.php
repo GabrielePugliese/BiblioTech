@@ -55,7 +55,7 @@ if (isset($_POST['verifica'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verifica OTP — BiblioScuola</title>
+  <title>Verifica OTP — BiblioTech</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body class="body--login">
@@ -66,7 +66,7 @@ if (isset($_POST['verifica'])) {
     <!-- Brand -->
     <div class="login-brand">
       <span class="login-brand__icon">📚</span>
-      <h1 class="login-brand__name">BiblioScuola</h1>
+      <h1 class="login-brand__name">BiblioTech</h1>
       <p class="login-brand__sub">Gestione biblioteca scolastica</p>
     </div>
 

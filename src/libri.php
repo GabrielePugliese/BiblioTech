@@ -3,7 +3,7 @@ require __DIR__ . "/config.php";
 require __DIR__ . "/funzioni.php";
 
 richiedi_login();
-richiedi_ruolo('studente');
+richiedi_ruolo('studente', 'bibliotecario');
 
 $libri = lista_libri($pdo);
 ?>
@@ -21,16 +21,23 @@ $libri = lista_libri($pdo);
   <nav class="navbar">
     <div class="navbar__brand">
       <span class="navbar__icon">📚</span>
-      <span class="navbar__title">BiblioScuola</span>
+      <span class="navbar__title">BiblioTech</span>
     </div>
 
     <ul class="navbar__links">
-      <li><a href="catalogo.php" class="active">Catalogo</a></li>
-      <li><a href="prestiti.php">I miei prestiti</a></li>
-    </ul>
+  <li><a class="active" href="/libri.php">Libri</a></li>
+  <?php if (($_SESSION['ruolo'] ?? '') === 'studente'): ?>
+    <li><a href="/prestiti.php">I miei prestiti</a></li>
+  <?php else: ?>
+    <li><a href="/gestione_restituzioni.php">Restituzioni</a></li>
+  <?php endif; ?>
+</ul>
 
     <div class="navbar__user">
-      <span class="navbar__badge navbar__badge--student">Studente</span>
+     <?php $ruolo = $_SESSION['ruolo'] ?? 'studente'; ?>
+<span class="navbar__badge <?= ($ruolo === 'bibliotecario') ? 'navbar__badge--admin' : 'navbar__badge--student' ?>">
+  <?= ($ruolo === 'bibliotecario') ? 'BIBLIOTECARIO' : 'STUDENTE' ?>
+</span>
       <span class="navbar__username"><?= htmlspecialchars($_SESSION['username']) ?></span>
       <a href="logout.php" class="btn btn--ghost btn--sm">Esci</a>
     </div>
