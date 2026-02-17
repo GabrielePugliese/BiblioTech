@@ -3,18 +3,18 @@ declare(strict_types=1);
 
 session_start();
 
-$nome_db = getenv('DB_NAME') ?: 'bibliotech';
-$utente_db = getenv('DB_USER') ?: 'app';
-$password_db = getenv('DB_PASS') ?: 'apppass';
-$host_db = getenv('DB_HOST') ?: 'db';
+$host = getenv('DB_HOST') ?: 'db';
+$db   = getenv('DB_NAME') ?: 'bibliotech';
+$user = getenv('DB_USER') ?: 'app';
+$pass = getenv('DB_PASS') ?: 'apppass';
 
-$dsn = "mysql:host=$host_db;dbname=$nome_db;charset=utf8mb4";
+$dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
 
 try {
-    $pdo = new PDO($dsn, $utente_db, $password_db, [
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 } catch (PDOException $e) {
-    die("Errore: impossibile collegarsi al database.");
+    die("Errore: database non raggiungibile.");
 }

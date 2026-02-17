@@ -1,76 +1,118 @@
 <?php
-declare(strict_types=1);
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
 
 require __DIR__ . "/config.php";
 require __DIR__ . "/funzioni.php";
 
 $errore = "";
-$info = "";
 
-// Se già loggato, manda alla pagina giusta
-if (!empty($_SESSION['autenticato']) && ($_SESSION['autenticato'] === true)) {
-    if (($_SESSION['ruolo'] ?? '') === 'bibliotecario') {
-        header("Location: gestione_restituzioni.php");
-    } else {
-        header("Location: libri.php");
-    }
+if (!empty($_SESSION['autenticato'])) {
+    header("Location: index.php");
     exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($username === '' || $password === '') {
-        $errore = "Compila tutti i campi.";
+    $utente = trova_utente_da_username($pdo, $username);
+
+    if (!$utente || !password_verify($password, $utente['password_hash'])) {
+        $errore = "Credenziali non valide.";
     } else {
+        $codice = crea_otp($pdo, (int)$utente['id_utente']);
 
-        $utente = trova_utente_da_username($pdo, $username);
+        $testo = "Il tuo codice OTP è: $codice\nScade tra 2 minuti.";
+        $ok = invia_email_mailpit((string)$utente['email'], "Codice OTP BiblioTech", $testo);
 
-        if (!$utente) {
-            $errore = "Credenziali non valide.";
-        } elseif (!password_verify($password, $utente['password_hash'])) {
-            $errore = "Credenziali non valide.";
+        if (!$ok) {
+            $errore = "Mailpit non raggiungibile. Controlla che sia attivo.";
         } else {
-            // 1) Genera OTP + salva in tabella session (scade 2 minuti)
-            $codice = crea_otp($pdo, (int)$utente['id_utente']);
-
-            // 2) Invia OTP via email (arriva su Mailpit)
-            invia_email_otp((string)$utente['email'], $codice);
-
-            // 3) Sessione provvisoria (in attesa OTP)
             $_SESSION['stato_login'] = 'OTP_IN_ATTESA';
             $_SESSION['id_utente_otp'] = (int)$utente['id_utente'];
-            $_SESSION['scadenza_otp_sessione'] = time() + 120;
-
             header("Location: otp.php");
             exit;
         }
     }
 }
-
-require __DIR__ . "/header.php";
 ?>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accedi — BiblioScuola</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="body--login">
 
-<h1>Login BiblioTech</h1>
+  <!-- ===== SCHERMATA DI LOGIN ===== -->
+  <main class="login-wrapper">
 
-<?php if ($errore): ?>
-  <div class="msg errore"><?= htmlspecialchars($errore) ?></div>
-<?php endif; ?>
+    <!-- Brand -->
+    <div class="login-brand">
+      <span class="login-brand__icon">📚</span>
+      <h1 class="login-brand__name">BiblioScuola</h1>
+      <p class="login-brand__sub">Gestione biblioteca scolastica</p>
+    </div>
 
-<?php if ($info): ?>
-  <div class="msg"><?= htmlspecialchars($info) ?></div>
-<?php endif; ?>
+    <!-- Card form -->
+    <section class="card login-card">
 
-<form method="post" autocomplete="off">
-  <label>Username</label>
-  <input name="username" required>
+      <header class="login-card__header">
+        <h2>Accedi</h2>
+        <p>Inserisci le tue credenziali per continuare.</p>
+      </header>
 
-  <label>Password</label>
-  <input name="password" type="password" required>
+      <?php if ($errore): ?>
+        <div class="msg msg--error" role="alert">
+          ✕ <?= htmlspecialchars($errore) ?>
+        </div>
+      <?php endif; ?>
 
-  <button type="submit">Accedi</button>
-</form>
+      <form method="post" class="login-form" novalidate>
 
-<?php require __DIR__ . "/footer.php"; ?>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="es. mario.rossi"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          Accedi →
+        </button>
+
+      </form>
+
+    </section>
+
+    <!-- Link di servizio (solo sviluppo) -->
+    <?php if (defined('APP_DEBUG') && APP_DEBUG): ?>
+      <p class="login-dev-note">
+        📬 Debug: <a href="http://localhost:8025" target="_blank" rel="noopener">Apri Mailpit inbox</a>
+      </p>
+    <?php endif; ?>
+
+  </main>
+
+</body>
+</html>

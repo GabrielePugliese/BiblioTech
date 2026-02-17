@@ -1,6 +1,0 @@
-body { font-family: Arial; background:#f5f5f5; }
-.container { width:500px; margin:40px auto; background:white; padding:20px; border-radius:10px; }
-input { width:100%; padding:10px; margin:8px 0; }
-button { padding:10px; background:#222; color:white; border:none; border-radius:8px; }
-.msg { padding:10px; background:#eef; margin:10px 0; }
-.errore { background:#fdd; }
