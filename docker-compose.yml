@@ -1,0 +1,73 @@
+services:
+  web:
+    build: .
+    container_name: BiblioTech-PHP
+    ports:
+      - "${PORT_PHP}:80"
+    environment:
+      - DB_NAME=${DB}
+      - DB_USER=${USER}
+      - DB_PASS=${PASSWORD}
+      - DB_HOST=db
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: BiblioTech-DB
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOTPWD}
+      MYSQL_DATABASE: ${DB}
+      MYSQL_USER: ${USER}
+      MYSQL_PASSWORD: ${PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${ROOTPWD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: BiblioTech-Mail
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: admin-panel
+    ports:
+      - "${PORT_ADMIN}:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ${ROOTPWD}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
