@@ -1,4 +1,3 @@
-
 -- UTENTE
 CREATE TABLE utente (
     id_utente INT AUTO_INCREMENT PRIMARY KEY,
@@ -8,6 +7,10 @@ CREATE TABLE utente (
     ruolo ENUM('studente','bibliotecario') NOT NULL,
     data_creazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE utente
+  ADD UNIQUE KEY uq_username (username),
+  ADD UNIQUE KEY uq_email (email);
 
 -- LIBRO
 CREATE TABLE libro (
